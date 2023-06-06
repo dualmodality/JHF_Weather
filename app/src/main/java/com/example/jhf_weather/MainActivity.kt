@@ -12,13 +12,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
 import com.example.jhf_weather.ui.theme.PurpleGrey40
-import com.example.jhf_weather.ui.theme.PurpleGrey80
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,52 +68,82 @@ fun CurrentWeather() {
                 .padding(16.dp)
         )
         Row(modifier = Modifier.fillMaxWidth()) {
-            Column (modifier = Modifier.fillMaxWidth(fraction = 0.6F)){
+            Column (modifier = Modifier.weight(0.6f)){
                 Text(
                     text = stringResource(id = R.string.current_temp_data),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Row(modifier = Modifier.padding(8.dp)) {
+                Row(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
                     Text(
                         text = stringResource(id = R.string.feels_like),
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
+                        modifier = Modifier.weight(2f).padding(4.dp)
                     )
                     Spacer(modifier = Modifier)
                     Text(
                         text = stringResource(id = R.string.feels_like_data),
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
+                        modifier = Modifier.weight(1f).padding(4.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.fillMaxWidth(0.1F))
+            Spacer(modifier = Modifier)
             Image(painter = painterResource(id = R.drawable.sunny),
-
-                    contentDescription = stringResource(id = R.string.img_description),
-                modifier = Modifier.fillMaxWidth()
+                contentDescription = stringResource(id = R.string.img_description),
+                modifier = Modifier.weight(0.4f).clip(shape = CircleShape).size(160.dp)
             )
         }
         Row {
-            Text(text = stringResource(id = R.string.daily_low))
+            Text(
+                text = stringResource(id = R.string.daily_low),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
             Spacer(modifier = Modifier)
-            Text(text = stringResource(id = R.string.daily_low_data))
+            Text(
+                text = stringResource(id = R.string.daily_low_data),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
         }
         Row {
-            Text(text = stringResource(id = R.string.daily_high))
+            Text(
+                text = stringResource(id = R.string.daily_high),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             Spacer(modifier = Modifier)
-            Text(text = stringResource(id = R.string.daily_high_data))
+            Text(
+                text = stringResource(id = R.string.daily_high_data),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
         }
         Row {
-            Text(text = stringResource(id = R.string.humidity))
+            Text(
+                text = stringResource(id = R.string.humidity),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             Spacer(modifier = Modifier)
-            Text(text = stringResource(id = R.string.humidity_data))
+            Text(
+                text = stringResource(id = R.string.humidity_data),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
         }
         Row {
-            Text(text = stringResource(id = R.string.atmos_pressure))
+            Text(
+                text = stringResource(id = R.string.atmos_pressure),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             Spacer(modifier = Modifier)
-            Text(text = stringResource(id = R.string.atmos_data))
+            Text(
+                text = stringResource(id = R.string.atmos_data),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
 
         }
 
