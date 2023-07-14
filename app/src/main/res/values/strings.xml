@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">JHF_Weather</string>
+    <string name="app_name">Joselyn\'s Weather App</string>
+    <string name="my_location">St. Paul, MN</string>
+    <string name="current_temp_data">72ºF</string>
+    <string name="feels_like">Feels like:</string>
+    <string name="feels_like_data">78ºF</string>
+    <string name="daily_low">Low:</string>
+    <string name="daily_low_data">65ºF</string>
+    <string name="daily_high">High:</string>
+    <string name="daily_high_data">80ºF</string>
+    <string name="humidity">Humidity:</string>
+    <string name="humidity_data">100%</string>
+    <string name="atmos_pressure">Pressure:</string>
+    <string name="atmos_data">1024hPa</string>
+    <string name="img_description">Sunny</string>
 </resources>
