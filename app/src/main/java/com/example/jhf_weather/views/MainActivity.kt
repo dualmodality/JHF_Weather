@@ -26,16 +26,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jhf_weather.R
+import com.example.jhf_weather.viewModels.CurrentConditionsViewModel
+import com.example.jhf_weather.models.CurrentConditions
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
 import com.example.jhf_weather.ui.theme.PurpleGrey40
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var currentVM: CurrentConditionsViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,7 +54,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = "CurrentConditions") {
                         composable(route = "CurrentConditions") {
-                            CurrentWeather(city = stringResource(id = R.string.my_location)) {
+                            CurrentWeather(currentVM.currentConditions) {
                                 navController.navigate(route = "Forecast")
                             }
                         }
@@ -66,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrentWeather(city: String, navTo: () -> Unit) {
+fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(
@@ -81,7 +87,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = PurpleGrey40)
         )
         Text(
-            text = city,
+            text = current.value?.locName.toString(),
             style = MaterialTheme.typography.headlineMedium,
             color = PurpleGrey40,
             modifier = Modifier
@@ -91,7 +97,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column (modifier = Modifier.weight(0.6f)){
                 Text(
-                    text = stringResource(id = R.string.current_temp_data),
+                    text = current.value?.temp.toString(),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -107,7 +113,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                     )
                     Spacer(modifier = Modifier)
                     Text(
-                        text = stringResource(id = R.string.feels_like_data),
+                        text = current.value?.feelsLike.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .weight(1f)
@@ -131,7 +137,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.daily_low_data),
+                text = current.value?.tempMin.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -144,7 +150,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.daily_high_data),
+                text = current.value?.tempMax.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -157,7 +163,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.humidity_data),
+                text = current.value?.humidity.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -170,7 +176,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.atmos_data),
+                text = current.value?.pressure.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -186,13 +192,14 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
 
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun CurrentWeatherPreview() {
     JHF_WeatherTheme {
-        CurrentWeather(city = stringResource(id = R.string.my_location)) {
-
+        CurrentWeather(previewVM.currentConditions) {
         }
     }
 }
+
+ */
