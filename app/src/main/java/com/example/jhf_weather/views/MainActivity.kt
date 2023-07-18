@@ -27,21 +27,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.MutableLiveData
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jhf_weather.R
 import com.example.jhf_weather.viewModels.CurrentConditionsViewModel
-import com.example.jhf_weather.models.CurrentConditions
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
 import com.example.jhf_weather.ui.theme.PurpleGrey40
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var currentVM: CurrentConditionsViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -54,13 +51,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = "CurrentConditions") {
                         composable(route = "CurrentConditions") {
-                            CurrentWeather(currentVM.currentConditions) {
+                            CurrentWeather {
                                 navController.navigate(route = "Forecast")
                             }
                         }
                         
                         composable(route = "Forecast") {
-                            ForecastList(forecasts = ForecastItems)
+                            ForecastList()
                         }
                     }
 
@@ -72,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Unit) {
+fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navTo: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(
@@ -87,7 +84,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = PurpleGrey40)
         )
         Text(
-            text = current.value?.locName.toString(),
+            text = viewModel.currentConditions.value?.locationName ?: "Nowhere",
             style = MaterialTheme.typography.headlineMedium,
             color = PurpleGrey40,
             modifier = Modifier
@@ -97,7 +94,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
         Row(modifier = Modifier.fillMaxWidth()) {
             Column (modifier = Modifier.weight(0.6f)){
                 Text(
-                    text = current.value?.temp.toString(),
+                    text = viewModel.currentConditions.value?.currentTemp.toString(),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -113,7 +110,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
                     )
                     Spacer(modifier = Modifier)
                     Text(
-                        text = current.value?.feelsLike.toString(),
+                        text = viewModel.currentConditions.value?.feelsLike.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .weight(1f)
@@ -137,7 +134,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
             Spacer(modifier = Modifier)
             Text(
-                text = current.value?.tempMin.toString(),
+                text = viewModel.currentConditions.value?.minTemp.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -150,7 +147,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = current.value?.tempMax.toString(),
+                text = viewModel.currentConditions.value?.maxTemp.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -163,7 +160,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = current.value?.humidity.toString(),
+                text = viewModel.currentConditions.value?.humidity.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -176,7 +173,7 @@ fun CurrentWeather(current: MutableLiveData<CurrentConditions>, navTo: () -> Uni
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = current.value?.pressure.toString(),
+                text = viewModel.currentConditions.value?.pressure.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
