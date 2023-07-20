@@ -21,7 +21,7 @@ object HiltModule {
     @Provides
     fun provideRetrofit(moshi: Moshi): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://api.openweathermap.org/data/2.5")
+            .baseUrl("http://api.openweathermap.org/data/2.5/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }

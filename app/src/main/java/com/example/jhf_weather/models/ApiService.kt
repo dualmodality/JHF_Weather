@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("/{callPath}")
+    @GET("{callPath}")
 
     suspend fun getCurrentConditions(
         @Path("callPath") request: String = "weather",
