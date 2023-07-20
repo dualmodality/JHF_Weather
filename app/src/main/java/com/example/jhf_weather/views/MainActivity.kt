@@ -21,10 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.jhf_weather.R
 import com.example.jhf_weather.viewModels.CurrentConditionsViewModel
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
@@ -72,8 +75,10 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navTo: () -> Unit) {
-    viewModel.viewAppeared()
     val currentWeather = viewModel.currentConditions.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.viewAppeared()
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(
@@ -122,14 +127,9 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                     )
                 }
             }
-            Spacer(modifier = Modifier)
-            Image(painter = painterResource(id = R.drawable.sunny),
-                contentDescription = stringResource(id = R.string.img_description),
-                modifier = Modifier
-                    .weight(0.4f)
-                    .clip(shape = CircleShape)
-                    .size(160.dp)
-            )
+            Column (modifier = Modifier.weight(0.4f)) {
+                WeatherConditionIcon(url = currentWeather.value?.weatherIconUrl)
+            }
         }
         Row {
             Text(
@@ -192,6 +192,12 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
         }
 
     }
+}
+
+@Composable
+
+fun WeatherConditionIcon( url: String?) {
+    AsyncImage(model = url, contentDescription = "", modifier = Modifier.fillMaxWidth())
 }
 /*
 @Preview(showBackground = true)

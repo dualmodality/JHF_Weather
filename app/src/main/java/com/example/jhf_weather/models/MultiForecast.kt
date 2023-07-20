@@ -20,8 +20,8 @@ data class DayForecast(
         get() = tempData.min
     val maxTemp : Float
         get() = tempData.max
-    val weatherIcon : String
-        get() = weatherSummaryList[0].icon
+    val weatherIconUrl : String
+        get() = "https://openweathermap.org/img/wn/${weatherSummaryList.firstOrNull()?.icon}@2x.png"
 }
 
 data class ForecastTemp(

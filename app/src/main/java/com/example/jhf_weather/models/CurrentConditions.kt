@@ -7,10 +7,10 @@ data class CurrentConditions(
     @Json(name = "main") private val weatherData : WeatherData,
     @Json(name = "name") val locationName : String
 ) {
-    val weatherIcon : String
-        get() = weatherSummaryList[0].icon
-    val weatherDescription : String
-        get() = weatherSummaryList[0].description
+    val weatherIconUrl : String
+        get() = "https://openweathermap.org/img/wn/${weatherSummaryList.firstOrNull()?.icon}@2x.png"
+    val weatherDescription : String?
+        get() = weatherSummaryList.firstOrNull()?.description
     val currentTemp : Float
         get() = weatherData.currentTemp
     val feelsLike : Float

@@ -1,6 +1,7 @@
 package com.example.jhf_weather.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,13 +44,7 @@ fun ForecastItemView(forecast: DayForecast) {
     val myTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mma")
     Row(modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically) {
-        Image(painter = painterResource(id = R.drawable.sunny),
-            contentDescription = stringResource(id = R.string.img_description),
-            modifier = Modifier
-                .clip(shape = CircleShape)
-                .size(64.dp)
-        )
-        Spacer(modifier = Modifier.size(8.dp))
+        Column(modifier = Modifier.weight(0.05f)) {WeatherConditionIcon(url = forecast.weatherIconUrl) }
         Text(text = LocalDateTime.ofInstant(Instant.ofEpochSecond(forecast.date), TimeZone.getDefault().toZoneId()).format(myDateFormatter).toString(),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
@@ -80,8 +76,11 @@ fun ForecastItemView(forecast: DayForecast) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastList(viewModel: ForecastViewModel = hiltViewModel()) {
-    viewModel.viewAppeared()
+
     val multi = viewModel.multiForecast.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.viewAppeared()
+    }
     Column {
         TopAppBar(
             title = {
@@ -98,9 +97,11 @@ fun ForecastList(viewModel: ForecastViewModel = hiltViewModel()) {
             colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = PurpleGrey40)
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(items = multi.value?.forecastList ?: listOf()) { ForecastItemView(
-                forecast = it) }
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(8.dp), verticalArrangement = Arrangement.SpaceBetween) {
+            items(items = multi.value?.forecastList ?: listOf()) {
+                ForecastItemView(forecast = it)
+                Spacer(modifier = Modifier.size(12.dp))
+            }
         }
     }
 }
