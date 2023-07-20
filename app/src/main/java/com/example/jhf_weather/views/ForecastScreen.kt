@@ -34,6 +34,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.TimeZone
+import kotlin.math.roundToInt
 
 @Composable
 fun ForecastItemView(forecast: DayForecast) {
@@ -54,14 +55,14 @@ fun ForecastItemView(forecast: DayForecast) {
         )
         Spacer(modifier = Modifier.size(8.dp))
         Column(modifier = Modifier) {
-            Text(text = (stringResource(id = R.string.temp_label) + forecast.daytimeTemp + stringResource(id = R.string.degF)),
+            Text(text = (stringResource(id = R.string.temp_label) + forecast.daytimeTemp.roundToInt() + stringResource(id = R.string.degF)),
                 style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.size(8.dp))
             Row(modifier = Modifier) {
-                Text(text = (stringResource(id = R.string.daily_high) + forecast.maxTemp + stringResource(id = R.string.degF)),
+                Text(text = (stringResource(id = R.string.daily_high) + forecast.maxTemp.roundToInt() + stringResource(id = R.string.degF)),
                 style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.size(8.dp))
-                Text(text = (stringResource(id = R.string.daily_low) + forecast.minTemp + stringResource(id = R.string.degF)),
+                Text(text = (stringResource(id = R.string.daily_low) + forecast.minTemp.roundToInt() + stringResource(id = R.string.degF)),
                 style = MaterialTheme.typography.bodyMedium)
             }
         }

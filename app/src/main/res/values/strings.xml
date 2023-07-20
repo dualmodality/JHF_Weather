@@ -11,7 +11,7 @@
     <string name="humidity">Humidity:</string>
     <string name="humidity_data">100%</string>
     <string name="atmos_pressure">Pressure:</string>
-    <string name="atmos_data">1024hPa</string>
+    <string name="atmos_units">hPa</string>
     <string name="img_description">Sunny</string>
     <string name="button_text">Forecast</string>
     <string name="temp_label">Temp:</string>

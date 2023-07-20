@@ -37,6 +37,7 @@ import com.example.jhf_weather.viewModels.CurrentConditionsViewModel
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
 import com.example.jhf_weather.ui.theme.PurpleGrey40
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -97,7 +98,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
         Row(modifier = Modifier.fillMaxWidth()) {
             Column (modifier = Modifier.weight(0.6f)){
                 Text(
-                    text = currentWeather.value?.currentTemp.toString(),
+                    text = "${currentWeather.value?.currentTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -113,7 +114,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                     )
                     Spacer(modifier = Modifier)
                     Text(
-                        text = currentWeather.value?.feelsLike.toString(),
+                        text = "${currentWeather.value?.feelsLike?.roundToInt()}" + stringResource(id = R.string.degF),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .weight(1f)
@@ -137,7 +138,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
             Spacer(modifier = Modifier)
             Text(
-                text = currentWeather.value?.minTemp.toString(),
+                text = "${currentWeather.value?.minTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -150,7 +151,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = currentWeather.value?.maxTemp.toString(),
+                text = "${currentWeather.value?.maxTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -163,7 +164,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = currentWeather.value?.humidity.toString(),
+                text = "${currentWeather.value?.humidity}%",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -176,7 +177,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = currentWeather.value?.pressure.toString(),
+                text = "${currentWeather.value?.pressure}" + stringResource(id = R.string.atmos_units),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
