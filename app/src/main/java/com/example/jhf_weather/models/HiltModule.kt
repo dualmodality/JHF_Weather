@@ -1,6 +1,7 @@
 package com.example.jhf_weather.models
 
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ object HiltModule {
 
     @Provides
     fun provideMoshi(): Moshi {
-        return Moshi.Builder().build()
+        return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     }
 
     @Provides

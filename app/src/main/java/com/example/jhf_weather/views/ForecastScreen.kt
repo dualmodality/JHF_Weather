@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.jhf_weather.R
 import com.example.jhf_weather.models.DayForecast
-import com.example.jhf_weather.models.dummyList
 import com.example.jhf_weather.ui.theme.PurpleGrey40
 import com.example.jhf_weather.viewModels.ForecastViewModel
 import java.time.Instant
@@ -79,6 +79,8 @@ fun ForecastItemView(forecast: DayForecast) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastList(viewModel: ForecastViewModel = hiltViewModel()) {
+    viewModel.viewAppeared()
+    val multi = viewModel.multiForecast.observeAsState()
     Column {
         TopAppBar(
             title = {
@@ -96,7 +98,7 @@ fun ForecastList(viewModel: ForecastViewModel = hiltViewModel()) {
         )
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(items = viewModel.multiForecast.value?.forecastList ?: dummyList) { ForecastItemView(
+            items(items = multi.value?.forecastList ?: listOf()) { ForecastItemView(
                 forecast = it) }
         }
     }

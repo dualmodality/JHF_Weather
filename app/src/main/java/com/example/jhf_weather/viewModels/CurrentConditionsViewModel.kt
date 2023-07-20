@@ -8,7 +8,6 @@ import com.example.jhf_weather.models.ApiService
 import com.example.jhf_weather.models.CurrentConditions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel

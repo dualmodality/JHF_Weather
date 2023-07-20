@@ -3,14 +3,14 @@ package com.example.jhf_weather.models
 import com.squareup.moshi.Json
 
 data class CurrentConditions(
-    @Json(name = "weather") private val weatherSummary : WeatherSummary,
+    @Json(name = "weather") private val weatherSummaryList : List<WeatherSummary>,
     @Json(name = "main") private val weatherData : WeatherData,
     @Json(name = "name") val locationName : String
 ) {
     val weatherIcon : String
-        get() = weatherSummary.icon
+        get() = weatherSummaryList[0].icon
     val weatherDescription : String
-        get() = weatherSummary.description
+        get() = weatherSummaryList[0].description
     val currentTemp : Float
         get() = weatherData.currentTemp
     val feelsLike : Float
