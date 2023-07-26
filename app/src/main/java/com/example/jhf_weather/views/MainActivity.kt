@@ -3,7 +3,6 @@ package com.example.jhf_weather.views
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,11 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -92,6 +91,9 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
             ) },
            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = PurpleGrey40)
         )
+
+        CurrentZipCode(viewModel)
+
         Text(
             text = currentWeather.value?.locationName ?: "Nowhere",
             style = MaterialTheme.typography.headlineMedium,
@@ -100,6 +102,7 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+
         Row(modifier = Modifier.fillMaxWidth()) {
             Column (modifier = Modifier.weight(0.6f)){
                 Text(
@@ -195,18 +198,44 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
 }
 
 @Composable
-
 fun WeatherConditionIcon( url: String?) {
     AsyncImage(model = url, contentDescription = "", modifier = Modifier.fillMaxWidth())
 }
-/*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CurrentZipCode(viewModel: CurrentConditionsViewModel) {
+    val userInput = viewModel.userZip.observeAsState()
+    OutlinedTextField(
+        value = userInput.value.toString(),
+        leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = stringResource(id = R.string.zip_label)
+                    )
+                      },
+        label = {
+                    Text(
+                        text = stringResource(id = R.string.zip_label),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = PurpleGrey40
+                    )
+                },
+        modifier = Modifier.padding(12.dp),
+        onValueChange = { viewModel.userZip.value = it}
+    )
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CurrentWeatherPreview() {
+    val navController = rememberNavController()
     JHF_WeatherTheme {
-        CurrentWeather(previewVM.currentConditions) {
+        CurrentWeather {
+            navController.navigate(route = "Forecast")
         }
     }
 }
 
- */
+

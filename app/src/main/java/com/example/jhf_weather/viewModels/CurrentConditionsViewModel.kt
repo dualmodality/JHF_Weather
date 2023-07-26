@@ -13,11 +13,17 @@ import javax.inject.Inject
 @HiltViewModel
 class CurrentConditionsViewModel @Inject constructor(private val apiService: ApiService) : ViewModel() {
 
+    val userZip: MutableLiveData<String> = MutableLiveData("02139")
     private val _currentConditions: MutableLiveData<CurrentConditions> = MutableLiveData()
     val currentConditions: LiveData<CurrentConditions>
         get() = _currentConditions
     fun viewAppeared() = viewModelScope.launch {
-        _currentConditions.value = apiService.getCurrentConditions()
+        _currentConditions.value = apiService.getCurrentConditions(zip = userZip.value.toString() + ",us")
     }
+
+    fun validateZip(userInput : String) {
+
+    }
+
 
 }

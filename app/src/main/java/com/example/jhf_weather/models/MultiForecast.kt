@@ -3,7 +3,7 @@ package com.example.jhf_weather.models
 import com.squareup.moshi.Json
 
 data class MultiForecast(
-    @Json(name = "cnt") val count: Int,
+    //@Json(name = "cnt") val count: Int,
     @Json(name = "list") val forecastList: List<DayForecast>
 )
 
