@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,10 +25,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,6 +55,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+
             JHF_WeatherTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -202,27 +211,66 @@ fun WeatherConditionIcon( url: String?) {
     AsyncImage(model = url, contentDescription = "", modifier = Modifier.fillMaxWidth())
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CurrentZipCode(viewModel: CurrentConditionsViewModel) {
     val userInput = viewModel.userZip.observeAsState()
-    OutlinedTextField(
-        value = userInput.value.toString(),
-        leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = stringResource(id = R.string.zip_label)
-                    )
-                      },
-        label = {
-                    Text(
-                        text = stringResource(id = R.string.zip_label),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = PurpleGrey40
-                    )
-                },
-        modifier = Modifier.padding(12.dp),
-        onValueChange = { viewModel.userZip.value = it}
+    val showAlert = viewModel.showInvalidZipWarning.observeAsState(initial = false)
+    Column {
+        OutlinedTextField(
+            value = userInput.value.toString(),
+            leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = stringResource(id = R.string.zip_label)
+                        )
+                          },
+            label = {
+                        Text(
+                            text = stringResource(id = R.string.zip_label),
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = PurpleGrey40
+                        )
+                    },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            modifier = Modifier.padding(12.dp),
+            onValueChange = { viewModel.userZip.value = it}
+        )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Center) {
+            Spacer(modifier = Modifier)
+            Button(onClick = {
+                viewModel.showInvalidZipWarning.value = !viewModel.validateZipAndUpdate()
+
+            }) {
+                Text(text = stringResource(id = R.string.get_zip_weather))
+            }
+            Spacer(modifier = Modifier)
+        }
+    }
+    if (showAlert.value) {
+        InvalidZipAlert {
+            viewModel.showInvalidZipWarning.value = false
+        }
+    }
+}
+
+@Composable
+fun InvalidZipAlert(
+    onDismiss: () -> Unit
+) {
+    AlertDialog(onDismissRequest = onDismiss,
+        confirmButton = @Composable {
+            Button(onClick = onDismiss) {
+                Text("Ok")
+            }
+        },
+        title = @Composable {
+            Text(stringResource(id = R.string.alert_title))
+        },
+        text = @Composable {
+            Text(stringResource(id = R.string.alert_body))
+        }
     )
 
 }
