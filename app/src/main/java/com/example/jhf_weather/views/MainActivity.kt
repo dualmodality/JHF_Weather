@@ -25,12 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -38,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -64,13 +60,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = "CurrentConditions") {
                         composable(route = "CurrentConditions") {
-                            CurrentWeather {
-                                navController.navigate(route = "Forecast")
-                            }
+                            CurrentWeather(navController = navController)
                         }
                         
-                        composable(route = "Forecast") {
-                            ForecastList()
+                        composable(route = "Forecast/{zip}") {
+                            val zip = it.arguments?.getString("zip")
+                            ForecastList(zip = zip)
                         }
                     }
 
@@ -82,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navTo: () -> Unit) {
+fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navController: NavController) {
     val currentWeather = viewModel.currentConditions.observeAsState()
     LaunchedEffect(Unit) {
         viewModel.viewAppeared()
@@ -197,7 +192,10 @@ fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navT
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Center) {
             Spacer(modifier = Modifier)
-            Button(onClick = navTo) {
+            Button(onClick = {
+                val navString = "Forecast/" + viewModel.userZip.value.toString()
+                navController.navigate(route = navString)}
+            ) {//Have access to pass ZIP code to navController
                 Text(text = stringResource(id = R.string.button_text))
             }
             Spacer(modifier = Modifier)
@@ -211,7 +209,7 @@ fun WeatherConditionIcon( url: String?) {
     AsyncImage(model = url, contentDescription = "", modifier = Modifier.fillMaxWidth())
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentZipCode(viewModel: CurrentConditionsViewModel) {
     val userInput = viewModel.userZip.observeAsState()
@@ -280,9 +278,7 @@ fun InvalidZipAlert(
 fun CurrentWeatherPreview() {
     val navController = rememberNavController()
     JHF_WeatherTheme {
-        CurrentWeather {
-            navController.navigate(route = "Forecast")
-        }
+        CurrentWeather(navController = navController)
     }
 }
 

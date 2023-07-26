@@ -20,7 +20,6 @@ class CurrentConditionsViewModel @Inject constructor(private val apiService: Api
     val currentConditions: LiveData<CurrentConditions>
         get() = _currentConditions
     fun viewAppeared(zip: String? = userZip.value) = viewModelScope.launch {
-        Log.d("viewAppeared", zip.toString())
         _currentConditions.value = apiService.getCurrentConditions(zip.toString() + ",us")
     }
 
@@ -28,6 +27,7 @@ class CurrentConditionsViewModel @Inject constructor(private val apiService: Api
         val currentUserInput = userZip.value
         if (
             (currentUserInput.isNullOrEmpty() || currentUserInput.length != 5) || (currentUserInput.any() { !it.isDigit() })) {
+            userZip.value = "55119"
             return false
         } else {
             Log.d("validateZipAndUpdate()", "valid Zip")
