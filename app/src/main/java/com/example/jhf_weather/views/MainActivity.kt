@@ -1,52 +1,57 @@
-package com.example.jhf_weather
+package com.example.jhf_weather.views
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import com.example.jhf_weather.R
+import com.example.jhf_weather.viewModels.CurrentConditionsViewModel
 import com.example.jhf_weather.ui.theme.JHF_WeatherTheme
 import com.example.jhf_weather.ui.theme.PurpleGrey40
-import com.example.jhf_weather.ui.theme.PurpleGrey80
+import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+
             JHF_WeatherTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -55,13 +60,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = "CurrentConditions") {
                         composable(route = "CurrentConditions") {
-                            CurrentWeather(city = stringResource(id = R.string.my_location)) {
-                                navController.navigate(route = "Forecast")
-                            }
+                            CurrentWeather(navController = navController)
                         }
                         
-                        composable(route = "Forecast") {
-                            ForecastList(forecasts = ForecastItems)
+                        composable(route = "Forecast/{zip}") {
+                            val zip = it.arguments?.getString("zip")
+                            ForecastList(zip = zip)
                         }
                     }
 
@@ -73,7 +77,11 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrentWeather(city: String, navTo: () -> Unit) {
+fun CurrentWeather(viewModel: CurrentConditionsViewModel = hiltViewModel(), navController: NavController) {
+    val currentWeather = viewModel.currentConditions.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.viewAppeared()
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(
@@ -87,18 +95,22 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
             ) },
            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = PurpleGrey40)
         )
+
+        CurrentZipCode(viewModel)
+
         Text(
-            text = city,
+            text = currentWeather.value?.locationName ?: "Nowhere",
             style = MaterialTheme.typography.headlineMedium,
             color = PurpleGrey40,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+
         Row(modifier = Modifier.fillMaxWidth()) {
             Column (modifier = Modifier.weight(0.6f)){
                 Text(
-                    text = stringResource(id = R.string.current_temp_data),
+                    text = "${currentWeather.value?.currentTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -114,7 +126,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                     )
                     Spacer(modifier = Modifier)
                     Text(
-                        text = stringResource(id = R.string.feels_like_data),
+                        text = "${currentWeather.value?.feelsLike?.roundToInt()}" + stringResource(id = R.string.degF),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .weight(1f)
@@ -122,14 +134,9 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                     )
                 }
             }
-            Spacer(modifier = Modifier)
-            Image(painter = painterResource(id = R.drawable.sunny),
-                contentDescription = stringResource(id = R.string.img_description),
-                modifier = Modifier
-                    .weight(0.4f)
-                    .clip(shape = CircleShape)
-                    .size(160.dp)
-            )
+            Column (modifier = Modifier.weight(0.4f)) {
+                WeatherConditionIcon(url = currentWeather.value?.weatherIconUrl)
+            }
         }
         Row {
             Text(
@@ -138,7 +145,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.daily_low_data),
+                text = "${currentWeather.value?.minTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -151,7 +158,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.daily_high_data),
+                text = "${currentWeather.value?.maxTemp?.roundToInt()}" + stringResource(id = R.string.degF),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
@@ -164,7 +171,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.humidity_data),
+                text = "${currentWeather.value?.humidity}%",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -177,7 +184,7 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
                 )
             Spacer(modifier = Modifier)
             Text(
-                text = stringResource(id = R.string.atmos_data),
+                text = "${currentWeather.value?.pressure}" + stringResource(id = R.string.atmos_units),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
@@ -185,7 +192,10 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Center) {
             Spacer(modifier = Modifier)
-            Button(onClick = navTo) {
+            Button(onClick = {
+                val navString = "Forecast/" + viewModel.userZip.value.toString()
+                navController.navigate(route = navString)}
+            ) {//Have access to pass ZIP code to navController
                 Text(text = stringResource(id = R.string.button_text))
             }
             Spacer(modifier = Modifier)
@@ -194,12 +204,82 @@ fun CurrentWeather(city: String, navTo: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun CurrentWeatherPreview() {
-    JHF_WeatherTheme {
-        CurrentWeather(city = stringResource(id = R.string.my_location)) {
+fun WeatherConditionIcon( url: String?) {
+    AsyncImage(model = url, contentDescription = "", modifier = Modifier.fillMaxWidth())
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CurrentZipCode(viewModel: CurrentConditionsViewModel) {
+    val userInput = viewModel.userZip.observeAsState()
+    val showAlert = viewModel.showInvalidZipWarning.observeAsState(initial = false)
+    Column {
+        OutlinedTextField(
+            value = userInput.value.toString(),
+            leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = stringResource(id = R.string.zip_label)
+                        )
+                          },
+            label = {
+                        Text(
+                            text = stringResource(id = R.string.zip_label),
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = PurpleGrey40
+                        )
+                    },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            modifier = Modifier.padding(12.dp),
+            onValueChange = { viewModel.userZip.value = it}
+        )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Center) {
+            Spacer(modifier = Modifier)
+            Button(onClick = {
+                viewModel.showInvalidZipWarning.value = !viewModel.validateZipAndUpdate()
+
+            }) {
+                Text(text = stringResource(id = R.string.get_zip_weather))
+            }
+            Spacer(modifier = Modifier)
+        }
+    }
+    if (showAlert.value) {
+        InvalidZipAlert {
+            viewModel.showInvalidZipWarning.value = false
         }
     }
 }
+
+@Composable
+fun InvalidZipAlert(
+    onDismiss: () -> Unit
+) {
+    AlertDialog(onDismissRequest = onDismiss,
+        confirmButton = @Composable {
+            Button(onClick = onDismiss) {
+                Text("Ok")
+            }
+        },
+        title = @Composable {
+            Text(stringResource(id = R.string.alert_title))
+        },
+        text = @Composable {
+            Text(stringResource(id = R.string.alert_body))
+        }
+    )
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CurrentWeatherPreview() {
+    val navController = rememberNavController()
+    JHF_WeatherTheme {
+        CurrentWeather(navController = navController)
+    }
+}
+
+

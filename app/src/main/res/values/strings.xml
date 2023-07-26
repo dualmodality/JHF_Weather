@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Joselyn\'s Weather App</string>
+    <string name="zip_label">Zip Code:</string>
+    <string name="get_zip_weather">Get Weather for US ZIP Code</string>
+    <string name="alert_title">Invalid US ZIP Code</string>
+    <string name="alert_body">You entered an invalid US ZIP code. Please try again.</string>
     <string name="my_location">St. Paul, MN</string>
     <string name="current_temp_data">72ºF</string>
     <string name="feels_like">Feels like:</string>
@@ -11,7 +15,7 @@
     <string name="humidity">Humidity:</string>
     <string name="humidity_data">100%</string>
     <string name="atmos_pressure">Pressure:</string>
-    <string name="atmos_data">1024hPa</string>
+    <string name="atmos_units">hPa</string>
     <string name="img_description">Sunny</string>
     <string name="button_text">Forecast</string>
     <string name="temp_label">Temp:</string>
